@@ -15,13 +15,12 @@ export default async function handler(
           'Authorization': `Bearer ${process.env.NEXT_PUBLIC_BEARER_TOKEN}`,
         },
       }
-      const query = `-civil -mechanical -is:retweet (I'm OR We're) hiring (engineers OR (an engineer))`
+      const query = `-civil -mechanical -electrical -biomedical -construction -chemical -is:retweet (I'm OR We're) hiring (engineers OR (an engineer))`.replace(" ","%20")
     const response = await fetch(`https://api.twitter.com/2/tweets/search/recent?query=${query}&max_results=100&expansions=author_id`,options)
     if(response.ok) {
         const res = await response.json()
     
         const ids = res.data.map((tweet: any) => tweet.author_id)
-        const url = `https://api.twitter.com/2/users?ids=${ids}`
         const users =  await fetch(`https://api.twitter.com/2/users?ids=${ids}`,options)
         if(users.ok) {
             const json = await users.json()
