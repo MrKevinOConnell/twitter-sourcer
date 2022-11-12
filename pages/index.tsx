@@ -2,27 +2,31 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import { Client } from "twitter-api-sdk";
-import { Card, Text} from '@mantine/core';
+import { Card, Text, Stack, LoadingOverlay} from '@mantine/core';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
   const client = new Client(process.env.BEARER_TOKEN as string);
   const [tweets,setTweets] = useState(null)
-
+  const [isLoading,setIsLoading] = useState(false)
   const getTweets = async () => {
+    setIsLoading(true)
     const tweets = await fetch("/api/tweets")
     if(tweets.ok) {
       const json = await tweets.json()
       console.log("tweet tweet",json)
       setTweets(json.response)
     }
-
+    setIsLoading(false)
   }
   useEffect(() => {
    getTweets()
   },[])
+  if(isLoading) {
+    return (<Stack align="center" justify="center"><LoadingOverlay visible /> </Stack>)
+  }
   if(!tweets) {
-    return (<div>no tweets</div>)
+    return (<Stack align="center" justify="center"><Text>No tweets found</Text> </Stack>)
   }
   return tweets && (
     <div className={styles.container}>
